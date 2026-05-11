@@ -68,24 +68,25 @@ def run_radar_cycle():
     
     loader = OKXPerpDataLoader()
     config = ChannelLevelStrategyConfig(verbose=False)
-    scan_cfg = StructureScanConfig(breakout_hold_bars=0)
+    scan_cfg = StructureScanConfig(breakout_hold_bars=1) # 至少站稳1根K线才算突破
     
     if is_full_scan:
         print(f"\n--- 执行【全网海选扫描】 (寻找新的酝酿中通道和错过的行情) ---")
         symbols_to_scan = get_all_active_usdt_swaps(loader)
-        state["watch_list"] = [] 
+        new_watchlist = [] 
         state["last_full_scan"] = current_time.isoformat()
     else:
+        # 高频扫描只监控正在酝酿的
         symbols_to_scan = [w["symbol"] for w in state.get("watch_list", [])]
         symbols_to_scan = list(set(symbols_to_scan)) 
         print(f"\n--- 执行【高频狙击扫描】 (监控左侧列表的 {len(symbols_to_scan)} 个币种) ---")
+        new_watchlist = state.get("watch_list", [])
         if not symbols_to_scan:
             print("当前酝酿列表为空，跳过高频扫描。等待下一次全网海选...")
             return
 
     new_breakouts = []
     new_missed = []
-    new_watchlist = [] if is_full_scan else state.get("watch_list", [])
     
     for i, symbol in enumerate(symbols_to_scan):
         print(f"扫描进度 [{i+1}/{len(symbols_to_scan)}]: {symbol}   ", end="\r")
@@ -105,6 +106,7 @@ def run_radar_cycle():
             continue
             
         symbol_still_forming = False
+        breakout_found_for_symbol = False
         
         for _, structure in tracked.iterrows():
             breakout_time_raw = structure.get("breakout_time", pd.NaT)
@@ -116,7 +118,8 @@ def run_radar_cycle():
                 bars_since_end = (latest_timestamp - window_end).total_seconds() / (15 * 60)
                 if bars_since_end <= 5 and (structure["peak_touches"] >= 3 or structure["valley_touches"] >= 3):
                     symbol_still_forming = True
-                    if is_full_scan:
+                    # 避免海选时同一个币种加入多次
+                    if is_full_scan and not any(w["symbol"] == symbol for w in new_watchlist):
                         new_watchlist.append({
                             "symbol": symbol,
                             "type": "Channel",
@@ -147,10 +150,13 @@ def run_radar_cycle():
                     }
                     
                     if 0 <= bars_since_breakout <= max_bars_ago:
-                        # 最新变盘点
-                        existing = [b for b in state.get("breakouts", []) if b["symbol"] == symbol and b["breakout_time"] == breakout_time.isoformat()]
-                        if not existing:
-                            new_breakouts.append(breakout_data)
+                        # 最新变盘点，确保一个币种在这个周期只报一次
+                        if not breakout_found_for_symbol:
+                            existing = [b for b in state.get("breakouts", []) if b["symbol"] == symbol and b["breakout_time"] == breakout_time.isoformat()]
+                            if not existing:
+                                new_breakouts.append(breakout_data)
+                                breakout_found_for_symbol = True
+                                symbol_still_forming = False # 突破了就不再是酝酿中
                     elif max_bars_ago < bars_since_breakout <= (48 * 4): 
                         # 过去48小时内错过的 (48h = 192根15mK线)
                         existing_alert = [b for b in state.get("breakouts", []) if b["symbol"] == symbol and b["breakout_time"] == breakout_time.isoformat()]
@@ -158,34 +164,46 @@ def run_radar_cycle():
                         if not existing_alert and not existing_missed:
                             new_missed.append(breakout_data)
 
-        if not is_full_scan and not symbol_still_forming:
+        # 如果突破了，或者不再符合酝酿条件，从 Watchlist 移除
+        if breakout_found_for_symbol or not symbol_still_forming:
             new_watchlist = [w for w in new_watchlist if w["symbol"] != symbol]
 
-    state["watch_list"] = new_watchlist
+    # 分离最新的变盘和历史变盘
+    active_breakouts = []
+    historical_missed = state.get("missed", []) + state.get("breakouts", [])
     
-    state["breakouts"] = new_breakouts + state.get("breakouts", [])
-    state["missed"] = new_missed + state.get("missed", [])
-    
-    # 清理陈旧的记录 (保留最近 48 小时内的)
-    def clean_old(items):
-        valid = []
-        seen = set()
+    # 合并新发现的
+    all_breakouts = new_breakouts + new_missed + historical_missed
+
+    def process_and_clean(items):
+        # 每个币种只保留最新的一个变盘点
+        symbol_latest = {}
         for item in items:
             try:
                 b_time = parser.parse(item["breakout_time"])
+                # 只保留 48 小时内的记录
                 if (current_time - b_time).total_seconds() <= 48 * 3600:
-                    unique_key = f"{item['symbol']}_{item['breakout_time']}"
-                    if unique_key not in seen:
-                        valid.append(item)
-                        seen.add(unique_key)
+                    symbol = item["symbol"]
+                    if symbol not in symbol_latest or b_time > parser.parse(symbol_latest[symbol]["breakout_time"]):
+                        symbol_latest[symbol] = item
             except Exception:
                 pass
-        # 按照发生时间倒序排列
-        valid.sort(key=lambda x: parser.parse(x["breakout_time"]), reverse=True)
-        return valid
         
-    state["breakouts"] = clean_old(state["breakouts"])
-    state["missed"] = clean_old(state["missed"])
+        sorted_items = list(symbol_latest.values())
+        sorted_items.sort(key=lambda x: parser.parse(x["breakout_time"]), reverse=True)
+        
+        # 分流：2小时内为 active，之外为 missed
+        active = []
+        missed = []
+        for itm in sorted_items:
+            b_time = parser.parse(itm["breakout_time"])
+            if (current_time - b_time).total_seconds() <= 2 * 3600: # 2小时内
+                active.append(itm)
+            else:
+                missed.append(itm)
+        return active, missed
+
+    state["breakouts"], state["missed"] = process_and_clean(all_breakouts)
     state["last_updated"] = current_time.isoformat()
     
     print(f"\n扫描完成. 酝酿中: {len(state['watch_list'])}, 新变盘: {len(new_breakouts)}, 历史变盘库: {len(state['breakouts'])}, 错过库: {len(state['missed'])}.")

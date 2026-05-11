@@ -59,10 +59,11 @@ class StructureScanConfig:
     min_alternations: int = 5
     max_follow_bars: int = 96
     post_breakout_bars: int = 24
-    breakout_buffer_atr: float = 0.18
-    breakout_body_atr: float = 0.16
-    breakout_body_outside_ratio: float = 0.25
-    breakout_hold_bars: int = 3
+    breakout_buffer_atr: float = 0.25
+    breakout_body_atr: float = 0.20
+    breakout_body_outside_ratio: float = 0.40
+    breakout_hold_bars: int = 1
+    volume_breakout_ratio: float = 1.25
 
 
 def initialize_triangle_columns(df: pd.DataFrame, prefix: str) -> pd.DataFrame:
@@ -937,6 +938,15 @@ def annotate_structure_breakouts(
 
             open_price = float(candle["open"])
             close_price = float(candle["close"])
+            volume_now = float(candle.get("volume", 0.0))
+            
+            # Simple volume MA check
+            lookback_idx = max(0, future_idx - 20)
+            avg_volume = candles["volume"].iloc[lookback_idx:future_idx].mean()
+            volume_ok = True
+            if pd.notna(avg_volume) and avg_volume > 0:
+                volume_ok = volume_now >= avg_volume * cfg.volume_breakout_ratio
+
             body = abs(close_price - open_price)
             if body < atr_now * cfg.breakout_body_atr:
                 continue
@@ -948,11 +958,13 @@ def annotate_structure_breakouts(
                 close_price > upper_now + buffer
                 and close_price > open_price
                 and bullish_body_outside >= body * cfg.breakout_body_outside_ratio
+                and volume_ok
             )
             bearish_breakout = (
                 close_price < lower_now - buffer
                 and close_price < open_price
                 and bearish_body_outside >= body * cfg.breakout_body_outside_ratio
+                and volume_ok
             )
 
             if bullish_breakout or bearish_breakout:

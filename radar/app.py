@@ -274,7 +274,7 @@ with mid_col:
 # ========================================
 missed_list = state.get("missed", [])
 with right_col:
-    st.markdown("<div class='col-header'>MISSED (LAST 24H)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='col-header'>MISSED (LAST 48H)</div>", unsafe_allow_html=True)
     
     if not missed_list:
         st.markdown("<div class='sys-status'>NO MISSED OPPORTUNITIES.</div>", unsafe_allow_html=True)
