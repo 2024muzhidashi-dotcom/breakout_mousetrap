@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  radar:
+    build: .
+    container_name: market-radar
+    restart: always
+    ports:
+      - "8501:8501"
+    volumes:
+      # Mount the data and radar directories to persist state and local data
+      - ./data:/app/data
+      - ./radar/state.json:/app/radar/state.json

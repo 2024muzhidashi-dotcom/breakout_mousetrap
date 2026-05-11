@@ -1,0 +1,108 @@
+{
+    "last_updated": "2026-05-11T08:10:30.261190+00:00",
+    "watch_list": [],
+    "breakouts": [],
+    "missed": [
+        {
+            "symbol": "TRUST/USDT:USDT",
+            "direction": "SHORT",
+            "entry_price": "0.0747",
+            "stop_loss": "0.0758",
+            "tp1": "0.0744",
+            "tp2": "0.0727",
+            "breakout_time": "2026-05-10T20:00:00+00:00",
+            "reason": "15分钟通道成熟后向下出现有力度实体跌破，直接按变盘空单上车。"
+        },
+        {
+            "symbol": "STRK/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.0531",
+            "stop_loss": "0.0516",
+            "tp1": "0.0544",
+            "tp2": "0.0580",
+            "breakout_time": "2026-05-10T17:45:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "APE/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.1581",
+            "stop_loss": "0.1555",
+            "tp1": "0.1602",
+            "tp2": "0.1636",
+            "breakout_time": "2026-05-10T16:15:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "APE/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.1578",
+            "stop_loss": "0.1556",
+            "tp1": "0.1602",
+            "tp2": "0.1619",
+            "breakout_time": "2026-05-10T16:00:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "FIL/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "1.1732",
+            "stop_loss": "1.1611",
+            "tp1": "1.1783",
+            "tp2": "1.2041",
+            "breakout_time": "2026-05-10T14:45:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "KSM/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "5.8350",
+            "stop_loss": "5.7646",
+            "tp1": "5.8885",
+            "tp2": "5.9543",
+            "breakout_time": "2026-05-10T14:00:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "NIGHT/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.0325",
+            "stop_loss": "0.0321",
+            "tp1": "0.0327",
+            "tp2": "0.0331",
+            "breakout_time": "2026-05-10T13:15:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "ACT/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.0158",
+            "stop_loss": "0.0155",
+            "tp1": "0.0159",
+            "tp2": "0.0165",
+            "breakout_time": "2026-05-10T12:30:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        },
+        {
+            "symbol": "BMNR/USDT:USDT",
+            "direction": "SHORT",
+            "entry_price": "22.5200",
+            "stop_loss": "22.6489",
+            "tp1": "22.4399",
+            "tp2": "22.3256",
+            "breakout_time": "2026-05-10T11:15:00+00:00",
+            "reason": "15分钟通道成熟后向下出现有力度实体跌破，直接按变盘空单上车。"
+        },
+        {
+            "symbol": "AZTEC/USDT:USDT",
+            "direction": "LONG",
+            "entry_price": "0.0233",
+            "stop_loss": "0.0230",
+            "tp1": "0.0235",
+            "tp2": "0.0240",
+            "breakout_time": "2026-05-10T06:30:00+00:00",
+            "reason": "15分钟通道成熟后向上出现有力度实体突破，直接按变盘多单上车。"
+        }
+    ],
+    "last_full_scan": "2026-05-11T08:10:30.261190+00:00"
+}
