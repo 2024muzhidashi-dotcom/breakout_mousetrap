@@ -1,10 +1,10 @@
-# Breakout Mousetrap (变盘老鼠夹) 📡
+# Breakout Mousetrap (变盘老鼠夹) 🪤
 
 **Breakout Mousetrap** 是一个基于通道识别功能的加密货币市场监控雷达终端。
 
 本项目基于我之前的 `crypto_ai_trader` 项目中的 **“通道/收敛识别引擎 (Channel Recognition)”** 进化而来，旨在帮助交易员能快速筛选出值得关注的行情。
 
-## 🌟 核心特性
+##  核心特性
 *   **三层扫描引擎**：
     *   **15分钟海选**：全自动拉取 OKX 所有的 USDT 本位永续合约（300+ 币种），寻找正在极致收敛（至少 5 次交替触碰顶底）的种类，放入 `CHANNEL MONITORING` 酝酿列表。
     *   **1分钟高频狙击**：对酝酿列表中的币种进行每分钟的高频扫描，一旦发生实质性放量突破，立即放入 `BREAKOUT ALERTS` 变盘信号列表。
