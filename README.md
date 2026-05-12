@@ -53,3 +53,7 @@ docker-compose down
 - 核心引擎：Pandas, NumPy, Scikit-learn
 - 前端终端：Streamlit
 - 部署：Docker, Docker Compose
+
+
+界面展示
+<img width="1413" height="773" alt="截屏2026-05-12 04 08 00" src="https://github.com/user-attachments/assets/63877f8d-e0d3-4ec4-9171-615925a7c992" />
